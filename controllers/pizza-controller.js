@@ -3,6 +3,15 @@ const { Pizza } = require('../models');
 const PizzaController = {
   getAllPizza(req, res) {
     Pizza.find({})
+    // populate comment field
+    .populate({
+      path: 'comments',
+      select: '-__v'
+    })
+    // do not (-) include __v field
+    .select('-__v')
+    // sort by newest pizza (DESC order)
+    .sort({ _id: -1 })
     .then(dbPizzaData => res.json(dbPizzaData))
     .catch(err => {
       console.log(err);
@@ -13,6 +22,13 @@ const PizzaController = {
   // destructure params from express req object to avoid returning unnecessary data
   getPizzaById({ params }, res) {
     Pizza.findOne({_id: params.id })
+    // populate comment field
+    .populate({
+      path: 'comments',
+      select: '-__v'
+    })
+    // do not (-) include __v field
+    .select('-__v')
     .then(dbPizzaData => {
       if (!dbPizzaData) {
         res.status(404).json({ message: 'No pizza found with this id!' })
